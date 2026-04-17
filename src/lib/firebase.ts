@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, User } from 'firebase/auth';
+import { getAuth, signOut, onAuthStateChanged, User, signInAnonymously } from 'firebase/auth';
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, query, where, orderBy, onSnapshot, deleteDoc, updateDoc, addDoc, Timestamp, serverTimestamp } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 import { UserProfile, ChatThread, Message } from '../types';
@@ -28,7 +28,15 @@ try {
 }
 
 export { auth, db };
-export const googleProvider = new GoogleAuthProvider();
+
+export async function guestSignIn() {
+  if (!auth) return;
+  try {
+    await signInAnonymously(auth);
+  } catch (error) {
+    console.error("Guest Sign-In failed:", error);
+  }
+}
 
 export enum OperationType {
   CREATE = 'create',
@@ -67,8 +75,8 @@ export async function syncUserProfile(user: User): Promise<UserProfile> {
   
   const profile: UserProfile = {
     uid: user.uid,
-    email: user.email,
-    displayName: user.displayName,
+    email: user.isAnonymous ? 'Guest' : user.email,
+    displayName: user.isAnonymous ? 'Guest' : user.displayName,
     photoURL: user.photoURL,
     createdAt: userDoc.exists() ? userDoc.data().createdAt : new Date().toISOString()
   };

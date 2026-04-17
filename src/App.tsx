@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
-import { auth, db, syncUserProfile, createThread, addMessage, deleteMessage, togglePinMessage } from './lib/firebase';
+import { auth, db, syncUserProfile, createThread, addMessage, deleteMessage, togglePinMessage, guestSignIn } from './lib/firebase';
 import { chatStream, generateTitle } from './lib/gemini';
 import { ChatThread, Message, UserProfile, Attachment } from './types';
 import LandingPage from './components/LandingPage';
-import Auth from './components/Auth';
 import Sidebar from './components/Sidebar';
 import MessageList from './components/MessageList';
 import ChatInput from './components/ChatInput';
@@ -16,7 +15,6 @@ export default function App() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [authReady, setAuthReady] = useState(false);
-  const [showAuth, setShowAuth] = useState(false);
   
   const [threads, setThreads] = useState<ChatThread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
@@ -24,6 +22,13 @@ export default function App() {
   const [isTyping, setIsTyping] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleGuestStart = async () => {
+    setLoading(true);
+    await guestSignIn();
+    setLoading(false);
+  };
 
   // Auth Listener
   useEffect(() => {
@@ -167,12 +172,8 @@ export default function App() {
     );
   }
 
-  if (!user && !showAuth) {
-    return <LandingPage onGetStarted={() => setShowAuth(true)} />;
-  }
-
-  if (!user && showAuth) {
-    return <Auth onSuccess={() => setShowAuth(false)} />;
+  if (!user) {
+    return <LandingPage onGetStarted={handleGuestStart} loading={loading} />;
   }
 
   return (

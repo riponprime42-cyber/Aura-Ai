@@ -1,13 +1,14 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Bot, Sparkles, Zap, Shield, MessageSquare, Mic, Image as ImageIcon, ArrowRight, Github, Twitter } from 'lucide-react';
+import { Bot, Sparkles, Zap, Shield, MessageSquare, Mic, Image as ImageIcon, ArrowRight, Github, Twitter, Loader2 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 interface LandingPageProps {
   onGetStarted: () => void;
+  loading?: boolean;
 }
 
-export default function LandingPage({ onGetStarted }: LandingPageProps) {
+export default function LandingPage({ onGetStarted, loading }: LandingPageProps) {
   return (
     <div className="min-h-screen bg-bg-main text-text-main font-sans selection:bg-accent/20 overflow-x-hidden">
       {/* Navigation */}
@@ -24,15 +25,11 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             <div className="flex items-center gap-3">
               <button 
                 onClick={onGetStarted}
-                className="text-sm font-semibold text-text-muted hover:text-sidebar"
+                disabled={loading}
+                className="bg-accent text-white px-5 py-2 rounded-md text-sm font-bold hover:bg-accent-hover transition-all shadow-md shadow-accent/10 flex items-center gap-2"
               >
-                Login
-              </button>
-              <button 
-                onClick={onGetStarted}
-                className="bg-accent text-white px-5 py-2 rounded-md text-sm font-bold hover:bg-accent-hover transition-all shadow-md shadow-accent/10"
-              >
-                Sign Up Free
+                {loading && <Loader2 size={14} className="animate-spin" />}
+                Get Started
               </button>
             </div>
           </div>
@@ -61,10 +58,15 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button 
                 onClick={onGetStarted}
-                className="group w-full sm:w-auto px-8 py-4 bg-sidebar text-white rounded-lg font-bold text-lg transition-all flex items-center justify-center gap-2 hover:bg-sidebar-hover shadow-xl"
+                disabled={loading}
+                className="group w-full sm:w-auto px-8 py-4 bg-sidebar text-white rounded-lg font-bold text-lg transition-all flex items-center justify-center gap-2 hover:bg-sidebar-hover shadow-xl disabled:opacity-70"
               >
-                Get Started
-                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                {loading ? <Loader2 size={24} className="animate-spin" /> : (
+                  <>
+                    Get Started
+                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
               </button>
               <button className="w-full sm:w-auto px-8 py-4 bg-white text-text-main border border-border rounded-lg font-bold text-lg transition-all hover:bg-slate-50 shadow-sm">
                 View Demo
