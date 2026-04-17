@@ -1,7 +1,13 @@
 import { GoogleGenAI } from "@google/genai";
 import { Message } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : '');
+
+if (!apiKey) {
+  console.warn('GEMINI_API_KEY is missing. AI features will not work until set in environment variables.');
+}
+
+const ai = new GoogleGenAI({ apiKey: apiKey || 'MISSING_KEY' });
 
 export async function chatStream(prompt: string, history: Message[], attachments: any[] = []) {
   const model = ai.models.generateContentStream({
