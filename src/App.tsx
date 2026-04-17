@@ -27,6 +27,11 @@ export default function App() {
 
   // Auth Listener
   useEffect(() => {
+    if (!auth) {
+      setError("Firebase Auth failed to initialize. Check your configuration.");
+      setAuthReady(true);
+      return;
+    }
     return onAuthStateChanged(auth, async (u) => {
       setAuthReady(false);
       setUser(u);
@@ -45,7 +50,7 @@ export default function App() {
 
   // Threads Listener
   useEffect(() => {
-    if (!user) return;
+    if (!user || !db) return;
     const q = query(
       collection(db, 'threads'),
       where('userId', '==', user.uid),
@@ -59,7 +64,7 @@ export default function App() {
 
   // Messages Listener
   useEffect(() => {
-    if (!activeThreadId) {
+    if (!activeThreadId || !db) {
       setMessages([]);
       return;
     }

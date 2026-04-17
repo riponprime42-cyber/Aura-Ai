@@ -37,7 +37,11 @@ export default function Sidebar({
   const sortedThreads = [...threads].sort((a, b) => {
     if (a.isPinned && !b.isPinned) return -1;
     if (!a.isPinned && b.isPinned) return 1;
-    return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
+    
+    const dateA = a.lastMessageAt ? (typeof a.lastMessageAt === 'string' ? new Date(a.lastMessageAt) : (a.lastMessageAt as any).toDate?.() || new Date(0)) : new Date(0);
+    const dateB = b.lastMessageAt ? (typeof b.lastMessageAt === 'string' ? new Date(b.lastMessageAt) : (b.lastMessageAt as any).toDate?.() || new Date(0)) : new Date(0);
+    
+    return dateB.getTime() - dateA.getTime();
   });
 
   const handleHoldStart = (threadId: string) => {

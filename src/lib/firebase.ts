@@ -1,19 +1,10 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, query, where, orderBy, onSnapshot, deleteDoc, updateDoc, addDoc, Timestamp, serverTimestamp } from 'firebase/firestore';
+import firebaseConfig from '../../firebase-applet-config.json';
 import { UserProfile, ChatThread, Message } from '../types';
 
-// Try to load from json, fallback to empty if missing (for production builds)
-let firebaseConfig: any = {};
-try {
-  // @ts-ignore
-  const config = await import('../../firebase-applet-config.json');
-  firebaseConfig = config.default || config;
-} catch (e) {
-  console.warn('Firebase config file not found, using environment variables');
-}
-
-// Override with environment variables if provided (Standard for Netlify/Production)
+// Robust configuration merging
 const finalConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || firebaseConfig.apiKey,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || firebaseConfig.authDomain,
@@ -24,9 +15,19 @@ const finalConfig = {
   firestoreDatabaseId: import.meta.env.VITE_FIREBASE_DATABASE_ID || firebaseConfig.firestoreDatabaseId || '(default)'
 };
 
-const app = initializeApp(finalConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app, finalConfig.firestoreDatabaseId);
+let app;
+let auth: any;
+let db: any;
+
+try {
+  app = initializeApp(finalConfig);
+  auth = getAuth(app);
+  db = getFirestore(app, finalConfig.firestoreDatabaseId);
+} catch (error) {
+  console.error("Firebase failed to initialize:", error);
+}
+
+export { auth, db };
 export const googleProvider = new GoogleAuthProvider();
 
 export enum OperationType {
