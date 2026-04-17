@@ -1,0 +1,8 @@
+{
+  "name": "Aura AI",
+  "description": "A powerful AI chatbot powered by Gemini with voice interaction, image analysis, and persistent chat history.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": []
+}

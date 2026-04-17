@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme {
+  --color-accent: #3b82f6;
+  --color-accent-hover: #2563eb;
+  --color-bg-main: #f8fafc;
+  --color-sidebar: #0f172a;
+  --color-sidebar-hover: #1e293b;
+  --color-border: #e2e8f0;
+  --color-text-main: #1e293b;
+  --color-text-muted: #64748b;
+  --color-bubble-ai: #f1f5f9;
+}
+
+@layer base {
+  body {
+    @apply bg-bg-main text-text-main antialiased;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-border rounded-full;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-text-muted/30;
+}
+
+.markdown-body {
+  @apply text-inherit leading-relaxed;
+}
+
+.markdown-body p {
+  @apply mb-3 last:mb-0;
+}
+
+.markdown-body code {
+  @apply bg-slate-100 px-1.5 py-0.5 rounded text-sm font-mono text-accent;
+}
+
+.markdown-body pre {
+  @apply bg-slate-900 text-white p-4 rounded-lg my-4 overflow-x-auto text-sm;
+}
+
+.markdown-body ul, .markdown-body ol {
+  @apply mb-4 ml-5;
+}
+
+.markdown-body ul { @apply list-disc; }
+.markdown-body ol { @apply list-decimal; }
+
+.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+  @apply font-bold text-text-main mt-5 mb-3;
+}
+
+.markdown-body h1 { @apply text-xl; }
+.markdown-body h2 { @apply text-lg; }
+.markdown-body h3 { @apply text-base; }
+

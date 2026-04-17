@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    // 
+    // Collection: users
+    //   - uid: string (required)
+    //   - email: string (optional)
+    //   - displayName: string (optional)
+    //   - photoURL: string (optional)
+    //   - createdAt: timestamp (required)
+    //
+    // Collection: threads
+    //   - id: string (required)
+    //   - title: string (required)
+    //   - lastMessageAt: timestamp (required)
+    //   - isPinned: bool (required)
+    //   - userId: string (required)
+    //   - previewText: string (optional)
+    //
+    // Subcollection: threads/{threadId}/messages
+    //   - id: string (required)
+    //   - role: string (required, 'user' | 'model')
+    //   - content: string (required)
+    //   - timestamp: timestamp (required)
+    //   - attachments: list (optional)
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isThreadOwner(threadId) {
+      return isAuthenticated() && get(/databases/$(database)/documents/threads/$(threadId)).data.userId == request.auth.uid;
+    }
+
+    // Auth & User logic
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && request.resource.data.uid == userId;
+    }
+
+    // Threads logic
+    match /threads/{threadId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+
+      // Messages logic
+      match /messages/{messageId} {
+        allow read: if isThreadOwner(threadId);
+        allow create: if isThreadOwner(threadId);
+        allow update, delete: if false; // Messages are usually immutable in this simple model
+      }
+    }
+  }
+}

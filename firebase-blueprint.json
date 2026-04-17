@@ -1,0 +1,68 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "User account information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "createdAt"]
+    },
+    "ChatThread": {
+      "title": "Chat Thread",
+      "description": "A conversation thread container",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "lastMessageAt": { "type": "string", "format": "date-time" },
+        "isPinned": { "type": "boolean" },
+        "userId": { "type": "string" },
+        "previewText": { "type": "string" }
+      },
+      "required": ["id", "userId", "lastMessageAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "An individual message in a thread",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "model"] },
+        "content": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "data": { "type": "string" }
+            }
+          }
+        }
+      },
+      "required": ["id", "role", "content", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "UserProfile",
+      "description": "Information about the registered user"
+    },
+    "/threads/{threadId}": {
+      "schema": "ChatThread",
+      "description": "Main threads collection"
+    },
+    "/threads/{threadId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Messages within a specific thread"
+    }
+  }
+}
